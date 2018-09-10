@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pie Chart Example</title>
+    <style>
+        body {
+            margin: 0;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<svg></svg>
+
+<body>
+
+
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+        //d3 has defined colors
+        //my inputs and outputs are discreet
+        //we dont need to specify a domain since these are ordinal
+        //I want you to output these colors
+        const colors = d3.scaleOrdinal(d3.schemeCategory10)
+        const data = [1, 12, 3, 6, 4, 13, 8];
+        const pies = d3.pie()(data);
+
+        const arc = d3
+            .arc()
+            .innerRadius(0)
+            .outerRadius(150)
+            .startAngle(d => d.startAngle)
+            .endAngle(d => d.endAngle);
+
+        const svg = d3
+            .select("svg")
+            .append("g")
+            .attr("transform", `translate(200,200)`);
+
+        svg.
+            selectAll("path")
+            .data(pies)
+            .enter().
+            append("path")
+            .attr("d", arc)
+            .attr("fill", (d, i) => colors(d.value))
+            .attr("stroke", "#fff");
+
+    </script>
+</body>
+
+</html>
