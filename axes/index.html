@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link rel="stylesheet" href="reset.css"> -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <title>Scales and Axes</title>
+
+</head>
+
+
+<body>
+
+    <svg></svg>
+    <script>
+
+        const city = "San Francisco", width = 800, height = 300, margin = { top: 20, bottom: 20, left: 20, right: 20 };
+
+        d3.tsv('data.tsv', (err, data) => {
+            data.forEach(d => {
+                d.date = d3.timeParse("%Y&m%d")(d.date);
+                d.date = new Date(d.date); // x
+                ++d[city] // y
+            })
+            //14:01 Challenge 1 : solution
+            //scales
+            const xExtent = d3.extent(data, d => d.date)
+            const yExtent = d3.extent(data, d => d[city])
+            const yScale = d3.scaleLinear().domain(yExtent).range([height - margin.bottom, margin.top])
+            const xScale = d3.scaleTime().domain(xExtent).range(margin.left, width - margin.right);
+            //create rectangles
+            let svg = d3.select("svg"), rect = svg.selectAll("rect").data(data).enter().append("rect").attr("width", 5);
+
+
+        })
+
+
+
+
+    </script>
+</body>
+
+</html>
