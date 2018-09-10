@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link rel="stylesheet" href="reset.css"> -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <title>Scales and Axes</title>
+    <style>
+        body {
+            margin: 0;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <svg></svg>
+    <script>
+
+
+
+        const city = "New York", width = 800, height = 300, margin = { top: 20, bottom: 20, left: 20, right: 20 };
+
+        d3.tsv('data.tsv', (err, data) => {
+            data
+                .forEach(d => {
+                    d.date = d3
+                        .timeParse("%Y%m%d")(d.date);
+                    d.date = new Date(d.date); // x
+                    ++d[city] // y
+                })
+            //scales
+            const xExtent = d3
+                .extent(data, d => d.date)
+            const yExtent = d3
+                .extent(data, d => d[city]),
+                yMax = d3.max(data, d => d[city]);
+
+            const yScale = d3
+                .scaleLinear()
+                // .domain(yExtent)
+                .domain([0, yMax])
+                .range([height - margin.bottom, margin.top])
+            const xScale = d3
+                .scaleTime()
+                .domain(xExtent)
+                .range([margin.left, width - margin.right]);
+
+            //create line 
+            const line = d3.line()
+                //this is how to tell d3.line how to get
+                //the x and y out of our data
+                .x(d => xScale(d.date))
+                .y(d => yScale(d[city]))
+                //adds a curve to the line
+                //you can do all different types of curves
+                .curve(d3.curveCatmullRom)
+            let svg = d3
+                .select("svg");
+            svg.append("path")
+                .attr("d", line(data))
+                //making fill = none provides the user to only see the line,
+                //and eliminates the black fill color
+                .attr("fill", "none")
+                //stroke is the color of the line
+                .attr("stroke", "blue")
+                ;
+            const xAxis = d3
+                .axisBottom()
+                .scale(xScale).tickFormat(d3.timeFormat('%b %Y')),
+                yAxis = d3
+                    .axisLeft()
+                    .scale(yScale);
+            svg.append('g').attr("transform", 'translate(' + [0, height - margin.bottom] + ')').call(xAxis);
+            svg.append('g').attr('transform', 'translate(' + [margin.left, 0] + ")").call(yAxis)
+
+
+        })
+
+
+
+    </script>
+</body>
+
+</html>
