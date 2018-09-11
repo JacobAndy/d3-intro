@@ -39,16 +39,19 @@
             colors = d3
                 .scaleOrdinal(d3.schemeCategory10),
             svg = d3
-                .select("svg"),
+                .select("svg");
 
-            t = d3//define transition, syncs everywhere when its used. 
-                //defined at the top of the page
-                .transition()
-                .duration(1000);
+
 
         let index = 0;
         function updateBars(data) {
-
+            //if we dont redeclare the transition
+            //on each time the function is called, 
+            //then the transition time defaults back to 
+            // 250 milliseconds
+            const t = d3
+                .transition()
+                .duration(1000);
             let bars = svg
                 .selectAll("rect")
                 .data(data, d => d);
@@ -67,15 +70,17 @@
                 .enter()
                 .append("rect")
                 .attr("width", rectWidth)
-                .attr("stroke", "#fff");
+                .attr("stroke", "#fff")
+                .attr("x", (d, i) => i * rectWidth)
+                .attr("y", height);
 
 
             //enter + update
             bars = enter
                 .merge(bars)
-                .attr("x", (d, i) => i * rectWidth)
                 .attr("fill", d => colors(d))
                 .transition(t)
+                .attr("x", (d, i) => i * rectWidth)
                 //animate remaining <rect />'s height to their next state
                 .attr("y", d => height - d)
                 .attr("height", d => d)
