@@ -36,8 +36,15 @@
                 [230, 120, 300, 145, 75, 250],
                 [240, 250, 100]
             ],
-            colors = d3.scaleOrdinal(d3.schemeCategory10),
-            svg = d3.select("svg");
+            colors = d3
+                .scaleOrdinal(d3.schemeCategory10),
+            svg = d3
+                .select("svg"),
+
+            t = d3//define transition, syncs everywhere when its used. 
+                //defined at the top of the page
+                .transition()
+                .duration(1000);
 
         let index = 0;
         function updateBars(data) {
@@ -49,6 +56,11 @@
             //exit 
             bars
                 .exit()
+                .transition(t)
+                //animate height down to 0
+                //before removing
+                .attr("y", height)
+                .attr("height", 0)
                 .remove();
 
             let enter = bars
@@ -62,9 +74,12 @@
             bars = enter
                 .merge(bars)
                 .attr("x", (d, i) => i * rectWidth)
+                .attr("fill", d => colors(d))
+                .transition(t)
+                //animate remaining <rect />'s height to their next state
                 .attr("y", d => height - d)
                 .attr("height", d => d)
-                .attr("fill", d => colors(d))
+
 
 
         }
